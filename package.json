@@ -1,5 +1,5 @@
 {
-  "name": "fake-website",
+  "name": "QR_Phishing",
   "version": "1.0.0",
   "description": "Social Engineering QR Code Demonstration Project",
   "main": "server.js",
