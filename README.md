@@ -2,4 +2,4 @@
 
 Watch the demo below:
 
-<video src="./FAKE-WEBSITE.mp4" controls="controls" width="800" height="600"></video>
+https://github.com/mohamed-wadi/APP_FR/releases/download/v1.0.0/FAKE-WEBSITE.mp4
